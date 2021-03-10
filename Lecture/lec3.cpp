@@ -1,6 +1,8 @@
 #include <iostream>
 #include <random>
-#include <conio.h>
+#include<vector>
+#include <algorithm>
+#include <Windows.h>
 
 using namespace std;
 
@@ -27,6 +29,7 @@ void Mix(int* matrix) {
 int main() {
 
 	int m[25] = {};
+	vector<int> inputs;
 
 	for (int i = 0; i < 25; i++) {
 		m[i] = i + 1;
@@ -37,25 +40,102 @@ int main() {
 	while (1) {
 
 		system("cls");
+		int Bingo = 0;
+
+		//for (int i = 0; i < 5; i++) {
+		//	for (int j = 0; j < 5; j++) {
+		//		if (m[i * 5 + j] == INT_MAX) {
+		//			cout << "*\t";
+		//		}
+		//		else {
+		//			cout << m[i * 5 + j] << "\t";
+		//		}
+
+		//	}
+		//	cout << endl;
+		//}
+
+		//테스트
+
+		int star1 = 0;
+		int star2 = 0;
 
 		for (int i = 0; i < 5; i++) {
+			star1 = star2 = 0;
 			for (int j = 0; j < 5; j++) {
 				if (m[i * 5 + j] == INT_MAX) {
-					cout << "*\t";
+					star1++;
 				}
-				else {
-					cout << m[i * 5 + j] << "\t";
+				if (m[j * 5 + i] == INT_MAX) {
+					star2++;
 				}
-
 			}
-			cout << endl;
+			if (star1 == 5) {
+				Bingo++;
+			}
+			if (star2 == 5) {
+				Bingo++;
+			}
 		}
 
-		cout << "숫자를 입력하세요 : ";
+		star1 = 0;
+
+		for (int i = 0; i < 25; i +=6) {
+			if (m[i] == INT_MAX) {
+				star1++;
+			}
+			if (star1 == 5) {
+				Bingo++;
+			}
+		}
+
+		star1 = 0;
+
+		for (int i = 4; i < 24; i +=4) {
+			if (m[i] == INT_MAX) {
+				star1++;
+			}
+			if (star1 == 5) {
+				Bingo++;
+			}
+		}
+
+
+		cout << "빙고 수 : ";
+		cout << Bingo << endl;
+
+		cout << "[";
+		for (int i = 0; i<inputs.size(); i++) {
+			cout << inputs[i] << ",";
+		}
+		cout <<"]"<<endl;
+
+		if (Bingo >= 5) {
+			cout << "게임 승리!" << endl;
+			return 0;
+		}
+
+
+		cout << "중복되지 않는 숫자를 입력하세요 (1~25사이, 0은 종료) : ";
 		int input = 0;
 		cin >> input;
 
-		cout << input << endl;
+		if (input > 25) {
+			MessageBox(nullptr, TEXT("1~25사이의 숫자를 입력해주세요!"), TEXT("Message"), MB_OK);
+			continue;
+		}
+		else if (input == 0) {
+			break;
+		}
+		else {
+			if ((find(inputs.begin(), inputs.end(), input)==inputs.end()) ) {
+				inputs.push_back(input);
+			}
+			else {
+				MessageBox(nullptr, TEXT("중복되지 않는 숫자를 입력하세요 !"), TEXT("Message"), MB_OK);
+			}
+
+		}
 
 		for (int i = 0; i < 25; i++) {
 			if (m[i] == input) {
