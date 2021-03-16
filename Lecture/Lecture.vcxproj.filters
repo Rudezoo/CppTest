@@ -22,6 +22,9 @@
     <Filter Include="소스 파일\lec3">
       <UniqueIdentifier>{1659fa3a-ff3c-4c12-9212-35e6a524f4b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\lec4">
+      <UniqueIdentifier>{7294df47-bc84-4037-a4fb-079762e99452}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lecture2.cpp">
@@ -32,6 +35,9 @@
     </ClCompile>
     <ClCompile Include="lec1.cpp">
       <Filter>소스 파일\Lec1</Filter>
+    </ClCompile>
+    <ClCompile Include="lec4.cpp">
+      <Filter>소스 파일\lec4</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
