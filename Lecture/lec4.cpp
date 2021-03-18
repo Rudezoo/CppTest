@@ -7,8 +7,23 @@
 using namespace std;
 
 enum AI_Mode {
-	AM_EASY=1,
-	AM_HARD=2
+	AM_EASY = 1,
+	AM_HARD = 2
+};
+
+enum LINE_NUMBER {
+	LN_H1 = 0,
+	LN_H2,
+	LN_H3,
+	LN_H4,
+	LN_H5,
+	LN_V1,
+	LN_V2,
+	LN_V3,
+	LN_V4,
+	LN_V5,
+	LN_LT,
+	LN_RT
 };
 
 int Random_Value(int min, int max) {
@@ -99,7 +114,7 @@ int main() {
 				if (Aimatrix[i * 5 + j] == INT_MAX) {
 					star3++;
 				}
-				if (Aimatrix[j* 5 + i] == INT_MAX) {
+				if (Aimatrix[j * 5 + i] == INT_MAX) {
 					star4++;
 				}
 			}
@@ -198,14 +213,27 @@ int main() {
 		}
 		cout << "]" << endl;
 
-		if (Bingo >= 5) {
-			cout << "Player 승리!" << endl;
-			return 0;
+
+
+
+		if (Bingo >= 5 || AiBingo >= 5) {
+			if (Bingo == AiBingo) {
+				cout << "Draw!" << endl;
+				return 0;
+			}
+			else {
+				if (Bingo >AiBingo) {
+					cout << "Player 승리!" << endl;
+					return 0;
+				}else{
+					cout << "Ai 승리!" << endl;
+					return 0;
+				}
+			}
 		}
-		if (AiBingo >= 5) {
-			cout << "AI 승리!" << endl;
-			return 0;
-		}
+
+
+
 
 
 		/*사용자의 입력*/
@@ -243,24 +271,126 @@ int main() {
 			}
 		}
 		switch (iAimode) {
-			case AM_EASY:
-				//선택안된 숫자목록을 만든다
-				//선택안된 숫자개수는 목록을 만들때 카운팅
-				iNoneSelectCount = 0;
-				for (int i = 0; i < 25; i++) {
-					if (Aimatrix[i] != INT_MAX) {
-						iNoneSelect[iNoneSelectCount] = Aimatrix[i];
-						iNoneSelectCount++;
+		case AM_EASY:
+			//선택안된 숫자목록을 만든다
+			//선택안된 숫자개수는 목록을 만들때 카운팅
+			iNoneSelectCount = 0;
+			for (int i = 0; i < 25; i++) {
+				if (Aimatrix[i] != INT_MAX) {
+					iNoneSelect[iNoneSelectCount] = Aimatrix[i];
+					iNoneSelectCount++;
+				}
+			}
+			input = iNoneSelect[Random_Value(0, iNoneSelectCount)];
+
+			break;
+		case AM_HARD:
+			//현재 숫자중 빙고줄 완성 가능성이 가장 높은 줄을 찾아서 그줄에 있는 숫자중 하나를 * 로만든다.
+			int iLine = 0;
+			int iStarCount = 0;
+			int iSaveCount = 0;
+
+			// 가로 별이 가장 많은 라인을 찾아낸다
+			for (int i = 0; i < 5; i++) {
+				iStarCount = 0;
+				for (int j = 0; j < 5; j++) {
+					if (Aimatrix[i * 5 + j] == INT_MAX) {
+						iStarCount++;
 					}
 				}
-				input =iNoneSelect[Random_Value(0, iNoneSelectCount)];
-				
-				break;
-			case AM_HARD:
-				break;
+
+				//별 다섯개 미만, 기존에 가장 많은 라인의 별보다 커야 가장 별이 많다(lik max value)
+				if (iStarCount < 5 && iSaveCount < iStarCount) {
+					iLine = i;
+					iSaveCount = iStarCount;
+				}
+			}
+
+			// 세로 별이 가장 많은 라인을 찾아낸다
+			for (int i = 0; i < 5; i++) {
+				iStarCount = 0;
+				for (int j = 0; j < 5; j++) {
+					if (Aimatrix[j * 5 + i] == INT_MAX) {
+						iStarCount++;
+					}
+				}
+
+				//별 다섯개 미만, 기존에 가장 많은 라인의 별보다 커야 가장 별이 많다(lik max value)
+				if (iStarCount < 5 && iSaveCount < iStarCount) {
+					iLine = i + 5;
+					iSaveCount = iStarCount;
+				}
+			}
+
+			//왼쪽->오른쪽 대각선
+			iStarCount = 0;
+			for (int i = 0; i < 25; i += 6) {
+				if (Aimatrix[i] == INT_MAX) {
+					++iStarCount;
+				}
+			}
+
+			if (iStarCount < 5 && iSaveCount < iStarCount) {
+				iLine = LN_LT;
+				iSaveCount = iStarCount;
+			}
+
+			//왼쪽->오른쪽 대각선
+			iStarCount = 0;
+			for (int i = 4; i < 24; i += 4) {
+				if (Aimatrix[i] == INT_MAX) {
+					++iStarCount;
+				}
+			}
+
+			if (iStarCount < 5 && iSaveCount < iStarCount) {
+				iLine = LN_RT;
+				iSaveCount = iStarCount;
+			}
+
+
+			//가능성이 제일 높은게 iLine에 저장
+			//그줄안에 *이 아닌 숫자중 하나를 선택한다.
+
+			//가로줄인 경우
+			if (iLine <= LN_H5) {
+				for (int i = 0; i < 5; i++) {
+					if (Aimatrix[iLine * 5 + i] != INT_MAX) {
+						input = Aimatrix[iLine * 5 + i];
+						break;
+					}
+				}
+			}
+			else if (iLine <= LN_H5) {
+				for (int i = 0; i < 5; i++) {
+					if (Aimatrix[i * 5 + (iLine - 5)] != INT_MAX) {
+						input = Aimatrix[i * 5 + (iLine - 5)];
+						break;
+					}
+				}
+			}
+			else if (iLine == LN_LT) {
+				for (int i = 0; i < 25; i += 6) {
+					if (Aimatrix[i] != INT_MAX) {
+						input = Aimatrix[i];
+						break;
+					}
+				}
+			}
+			else if (iLine == LN_RT) {
+				for (int i = 4; i < 24; i += 4) {
+					if (Aimatrix[i] != INT_MAX) {
+						input = Aimatrix[i];
+						break;
+					}
+				}
+			}
+
+
+			break;
 
 		}
-	
+
 
 		for (int i = 0; i < 25; i++) {
 			if (m[i] == input) {
